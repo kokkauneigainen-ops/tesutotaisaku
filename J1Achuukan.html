@@ -1,0 +1,609 @@
+    /* セキュリティーゴミなのは知ってます。攻撃しないで、許して；； */
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f5f1e8">
+<title>J1A 中間テスト対策</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f1e8;
+    --paper: #fffdf7;
+    --ink: #2a2a2a;
+    --ink-soft: #5a5a5a;
+    --ink-faint: #8a8580;
+    --line: #e6dfce;
+    --rule: #d4c9a8;
+    --accent: #8b3a3a;
+    --accent-soft: #f3e3df;
+    --answer: #2c5f4f;
+    --answer-soft: #e6efe9;
+    --note: #946d2c;
+    --note-soft: #f5ecd9;
+    --shadow: 0 1px 0 rgba(120, 100, 60, 0.06), 0 4px 20px -8px rgba(120, 100, 60, 0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Zen Maru Gothic", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at top left, rgba(255,255,255,0.5), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(180,150,90,0.05), transparent 60%);
+    color: var(--ink);
+    line-height: 1.7;
+    min-height: 100vh;
+    padding: 16px 14px 40px;
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-bottom: max(40px, env(safe-area-inset-bottom));
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: 16px;
+    letter-spacing: 0.01em;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--rule);
+  }
+  header .kanji {
+    font-family: "Shippori Mincho", serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--ink);
+  }
+  header .sub {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.3em;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  /* 絞り込みパネル */
+  .filters {
+    background: var(--paper);
+    border-radius: 14px;
+    padding: 14px 14px 12px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+  }
+  .filters-title {
+    font-family: "Shippori Mincho", serif;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.2em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .filters-title::before,
+  .filters-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  .filter-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .filter-item label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    margin-bottom: 4px;
+    letter-spacing: 0.1em;
+  }
+  select {
+    width: 100%;
+    padding: 11px 32px 11px 12px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%238a8580' d='M0 0l5 6 5-6z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: border-color 0.15s;
+  }
+  select:focus { outline: none; border-color: var(--accent); }
+  .count {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    text-align: right;
+    margin-top: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  /* 問題カード */
+  .card {
+    background: var(--paper);
+    border-radius: 14px;
+    padding: 18px 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    top: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--note));
+    opacity: 0.5;
+    border-radius: 0 0 3px 3px;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+    font-size: 0.72rem;
+  }
+  .badge {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    border: 1px solid;
+  }
+  .badge.subject { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+  .badge.diff    { background: var(--note-soft);   color: var(--note);   border-color: transparent; }
+
+  .title {
+    font-family: "Shippori Mincho", serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--line);
+    letter-spacing: 0.05em;
+  }
+
+  .question {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    margin-bottom: 12px;
+    color: var(--ink);
+  }
+
+  .question-image {
+    width: 100%;
+    max-height: 320px;
+    object-fit: contain;
+    border-radius: 10px;
+    margin: 8px 0 14px;
+    background: #fafafa;
+    border: 1px solid var(--line);
+    cursor: zoom-in;
+    display: block;
+  }
+  .image-hint {
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    text-align: center;
+    margin-top: -10px;
+    margin-bottom: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  /* 答え＆解説 */
+  .reveal {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .reveal-label {
+    font-family: "Shippori Mincho", serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .reveal-label::before {
+    content: "";
+    width: 4px;
+    height: 14px;
+    border-radius: 2px;
+  }
+  .reveal-label.answer { color: var(--answer); }
+  .reveal-label.answer::before { background: var(--answer); }
+  .reveal-label.note   { color: var(--note); margin-top: 14px; }
+  .reveal-label.note::before { background: var(--note); }
+
+  .reveal-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    font-size: 1rem;
+    line-height: 1.8;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+  }
+  .reveal-text.answer { background: var(--answer-soft); color: var(--ink); }
+  .reveal-text.note   { background: var(--note-soft);   color: var(--ink-soft); font-size: 0.95rem; }
+
+  /* ボタン */
+  .button-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  button {
+    padding: 14px 12px;
+    font-size: 0.98rem;
+    font-family: inherit;
+    font-weight: 500;
+    border: 1px solid;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.15s;
+    letter-spacing: 0.08em;
+    min-height: 48px;
+    touch-action: manipulation;
+  }
+  button:active { transform: scale(0.97); }
+  .btn-show {
+    background: #fff;
+    color: var(--answer);
+    border-color: var(--answer);
+  }
+  .btn-show:disabled {
+    background: var(--answer-soft);
+    color: var(--ink-faint);
+    border-color: transparent;
+    cursor: default;
+  }
+  .btn-next {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 2px 0 #6b2828;
+  }
+  .btn-next:active { box-shadow: 0 0 0 #6b2828; transform: translateY(2px); }
+
+  /* 状態表示 */
+  .status {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-faint);
+    background: var(--paper);
+    border-radius: 14px;
+    border: 1px dashed var(--line);
+    font-size: 0.95rem;
+  }
+  .status.error { color: var(--accent); }
+
+  /* 画像モーダル */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 18, 12, 0.96);
+    z-index: 1000;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pinch-zoom;
+  }
+  .modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .modal-close {
+    position: fixed;
+    top: max(14px, env(safe-area-inset-top));
+    right: 14px;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+  .modal-hint {
+    position: fixed;
+    bottom: max(20px, env(safe-area-inset-bottom));
+    left: 0; right: 0;
+    text-align: center;
+    color: rgba(255,255,255,0.6);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    pointer-events: none;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.15em;
+  }
+
+  /* タブレット以上 */
+  @media (min-width: 600px) {
+    body { font-size: 17px; padding: 24px; }
+    header .kanji { font-size: 1.8rem; }
+    .card { padding: 22px 22px; }
+    .question { font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="kanji">中間テスト対策</div>
+  <div class="sub">Practice Set</div>
+</header>
+
+<section class="filters">
+  <div class="filters-title">絞り込み</div>
+  <div class="filter-grid">
+    <div class="filter-item">
+      <label for="subject-select">教科</label>
+      <select id="subject-select"><option value="">すべて</option></select>
+    </div>
+    <div class="filter-item">
+      <label for="difficulty-select">難易度</label>
+      <select id="difficulty-select"><option value="">すべて</option></select>
+    </div>
+  </div>
+  <div class="count" id="count-label"></div>
+</section>
+
+<main id="content">
+  <div class="status">読み込み中…</div>
+</main>
+
+<div class="footer">© J1A 中間テスト対策</div>
+
+<!-- 画像拡大モーダル -->
+<div class="modal" id="image-modal" role="dialog" aria-modal="true">
+  <button class="modal-close" id="modal-close" aria-label="閉じる">×</button>
+  <img id="modal-img" src="" alt="">
+  <div class="modal-hint">ピンチで拡大／タップで閉じる</div>
+</div>
+
+<script>
+
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyjrSUIE2Ez51TK0AvT2AtPn7Lwejmv6Z1U_3kyqSPn7p4_v0XuStgs8clZQ5CfethwPg/exec';
+
+  // 画像ファイルを置くフォルダ（GitHub リポジトリ内の相対パス）
+  const IMAGE_BASE = 'images/';
+
+  // ============================================================
+  //  状態管理
+  // ============================================================
+  let allQuestions = [];   // 初回ロード後は変更されない
+  let filtered = [];       // 絞り込み結果
+  let currentIndex = -1;   // 直前に出した問題のインデックス（連続回避）
+
+  const contentEl    = document.getElementById('content');
+  const subjectSel   = document.getElementById('subject-select');
+  const difficultySel= document.getElementById('difficulty-select');
+  const countLabel   = document.getElementById('count-label');
+  const modal        = document.getElementById('image-modal');
+  const modalImg     = document.getElementById('modal-img');
+
+  // ============================================================
+  //  初期ロード（ページを開いた時の1回だけ）
+  // ============================================================
+  fetch(GAS_URL, { method: 'GET' })
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(data => {
+      if (!Array.isArray(data) || data.length === 0) {
+        contentEl.innerHTML = '<div class="status">問題が登録されていません</div>';
+        return;
+      }
+      allQuestions = data;
+      setupFilters();
+      applyFilter();
+    })
+    .catch(err => {
+      console.error(err);
+      contentEl.innerHTML = '<div class="status error">読み込みに失敗しました。<br>GAS URL の設定を確認してください。</div>';
+    });
+
+  // ============================================================
+  //  絞り込み用プルダウンの構築
+  // ============================================================
+  function setupFilters() {
+    const subjects = [...new Set(allQuestions.map(q => q.subject).filter(Boolean))];
+    const diffs    = [...new Set(allQuestions.map(q => q.difficulty).filter(Boolean))];
+
+    // 難易度は数値順 → それ以外は登場順
+    diffs.sort((a, b) => {
+      const na = Number(a), nb = Number(b);
+      if (!isNaN(na) && !isNaN(nb)) return na - nb;
+      return String(a).localeCompare(String(b), 'ja');
+    });
+
+    subjects.forEach(s => subjectSel.appendChild(new Option(s, s)));
+    diffs.forEach(d => difficultySel.appendChild(new Option(d, d)));
+
+    subjectSel.addEventListener('change', applyFilter);
+    difficultySel.addEventListener('change', applyFilter);
+  }
+
+  // ============================================================
+  //  絞り込み実行 → ランダム出題
+  // ============================================================
+  function applyFilter() {
+    const sub  = subjectSel.value;
+    const diff = difficultySel.value;
+    filtered = allQuestions.filter(q =>
+      (!sub  || q.subject === sub) &&
+      (!diff || String(q.difficulty) === String(diff))
+    );
+    countLabel.textContent = `該当: ${filtered.length}問 / 全${allQuestions.length}問`;
+    currentIndex = -1;
+
+    if (filtered.length === 0) {
+      contentEl.innerHTML = '<div class="status">条件に合う問題がありません</div>';
+      return;
+    }
+    showRandomQuestion();
+  }
+
+  function showRandomQuestion() {
+    if (filtered.length === 0) return;
+    let idx;
+    if (filtered.length === 1) {
+      idx = 0;
+    } else {
+      // 直前と同じ問題を避ける
+      do {
+        idx = Math.floor(Math.random() * filtered.length);
+      } while (idx === currentIndex);
+    }
+    currentIndex = idx;
+    renderQuestion(filtered[idx]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ============================================================
+  //  問題カードの描画
+  // ============================================================
+  function renderQuestion(q) {
+    const imgHtml = q.image
+      ? `<img class="question-image" id="q-image"
+              src="${IMAGE_BASE}${escapeAttr(q.image)}"
+              alt="問題画像"
+              onerror="this.parentNode.querySelector('#q-image').remove(); const h=this.parentNode.querySelector('#q-image-hint'); if(h) h.remove();">
+         <div class="image-hint" id="q-image-hint">タップで拡大</div>`
+      : '';
+
+    contentEl.innerHTML = `
+      <article class="card">
+        <div class="meta">
+          ${q.subject    ? `<span class="badge subject">${escapeHtml(q.subject)}</span>` : ''}
+          ${q.difficulty ? `<span class="badge diff">難易度 ${escapeHtml(String(q.difficulty))}</span>` : ''}
+        </div>
+        ${q.title ? `<div class="title">${escapeHtml(q.title)}</div>` : ''}
+        <div class="question">${escapeHtml(q.question)}</div>
+        ${imgHtml}
+        <div id="answer-area"></div>
+        <div class="button-row">
+          <button class="btn-show" id="show-answer-btn">答えを見る</button>
+          <button class="btn-next" id="next-btn">次の問題 →</button>
+        </div>
+      </article>
+    `;
+
+    const img = document.getElementById('q-image');
+    if (img) img.addEventListener('click', () => openModal(img.src));
+
+    document.getElementById('show-answer-btn').addEventListener('click', showAnswer);
+    document.getElementById('next-btn').addEventListener('click', showRandomQuestion);
+  }
+
+  // ============================================================
+  //  答え・解説の表示（ボタンが押された時のみ）
+  // ============================================================
+  function showAnswer() {
+    const q = filtered[currentIndex];
+    const area = document.getElementById('answer-area');
+    area.innerHTML = `
+      <div class="reveal">
+        <div class="reveal-label answer">答え</div>
+        <div class="reveal-text answer">${escapeHtml(q.answer || '（未登録）')}</div>
+        ${q.explanation ? `
+          <div class="reveal-label note">補足・解説</div>
+          <div class="reveal-text note">${escapeHtml(q.explanation)}</div>
+        ` : ''}
+      </div>
+    `;
+    const btn = document.getElementById('show-answer-btn');
+    btn.disabled = true;
+    btn.textContent = '表示済み';
+  }
+
+  // ============================================================
+  //  画像拡大モーダル
+  // ============================================================
+  function openModal(src) {
+    modalImg.src = src;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    modal.classList.remove('active');
+    modalImg.src = '';
+    document.body.style.overflow = '';
+  }
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  modal.addEventListener('click', e => {
+    if (e.target === modal || e.target === modalImg) closeModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+  });
+
+  // ============================================================
+  //  ユーティリティ
+  // ============================================================
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+  function escapeAttr(s) {
+    return escapeHtml(s);
+  }
+</script>
+</body>
+</html>
